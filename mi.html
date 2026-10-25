@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1a0f22">
+<title>Mi progreso · Jóvenes de Fuego</title>
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="modulepreload" href="perfil.js"><link rel="stylesheet" href="tema.css"><link rel="stylesheet" href="paletas.css"><link rel="stylesheet" href="base.css"><script src="paleta.js"></script>
+<script>(function(){var h=document.documentElement,t='light';try{t=JSON.parse(localStorage.getItem('jf-pref')||'{}').theme||'light'}catch(e){}var d=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);h.dataset.ui=d?'dark':'light';h.dataset.theme=d?'dark':'light';h.classList.add('pub');if(/juegos/.test(location.pathname))h.classList.add('jg');if(/[?&]tv=1/.test(location.search)){h.dataset.ui='dark';h.dataset.theme='dark'}})()</script><link rel="stylesheet" href="nuevo.css"><script src="nuevo.js" defer></script></head>
+<body>
+<header><img src="icon-192.png" alt=""><h1>MI PROGRESO</h1><div class="sub" id="mo">Jóvenes de Fuego</div><div class="bar"><i style="background:#e8141f"></i><i style="background:#2b3bff"></i><i style="background:#b81ae8"></i><i style="background:#ffe81a"></i></div></header>
+<main id="m"><div class="sec mut" style="text-align:center">Cargando…</div></main>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getFirestore,doc,setDoc,collection,onSnapshot} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import * as CFG from './firebase-config.js';
+import * as PF from './perfil.js';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const PAL=['#e8141f','#2b3bff','#b81ae8','#e8a600','#f97316','#0d9488'];
+const av=(n,s)=>{let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%997;const i=n.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]/g,'').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();return `<span class='av' style='width:${s}px;height:${s}px;background:${PAL[h%PAL.length]};font-size:${Math.round(s*.4)}px'>${esc(i||'?')}</span>`};
+const empty=(e,t)=>`<div class='sec' style='text-align:center'><div style='font-size:50px'>${e}</div><div>${t}</div></div>`;
+let D=null,sel='',q='',fs=null;
+try{sel=localStorage.getItem('jf-me')||''}catch(e){}
+let P={};
+const pav=(x,s)=>PF.render((x.i&&P[x.i])||{},av(x.n,s),s);
+let TAB='frames';
+const shrink=f=>new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const c=document.createElement('canvas'),Z=144,m=Math.min(im.width,im.height),g=c.getContext('2d');c.width=c.height=Z;g.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,Z,Z);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.74))};im.onerror=no;im.src=u});
+async function savePh(patch,msg){const x=(D&&D.all||[]).find(a=>a.n===sel);if(!x)return;if(!x.i){$('phs').textContent='Pídele a un líder que abra la app para actualizar esta página.';return}
+ const cur=P[x.i]||{},d={p:cur.p||'',f:cur.f||'',a:cur.a||'',b:cur.b||'',t:cur.t||'',u:cur.u||[],w:cur.w||0,...patch,c:Date.now()};
+ try{await setDoc(doc(fs,'photos',x.i),d);P[x.i]=d;draw();['phs','shs'].forEach(k=>{if($(k))$(k).textContent=msg})}catch(e){$('phs').textContent='⚠️ No se pudo guardar. Intenta de nuevo.'}}
+function shop(x){const p=P[x.i]||{},w=p.w||0,u=p.u||[],cat=PF.CAT[TAB],eq={frames:p.f||'',avs:p.a||'',tits:p.t||'',bans:p.b||''}[TAB],tabs=[['frames','🖼️ Marcos'],['avs','🦁 Avatares'],['tits','🏷️ Títulos'],['bans','🎨 Fondos']];
+ return `<div class='sec'><h2>🛍️ Tienda de Llamas</h2><div class='mut'>Tienes <b style='color:var(--acc);font-size:18px'>${w} 🔥 Llamas</b>. <a href='juegos.html' style='color:var(--acc)'>Juega</a> para ganar más y desbloquear cosas.</div><div class='frs'>${tabs.map(t=>`<button data-tab='${t[0]}' class='${TAB===t[0]?'on':''}'>${t[1]}</button>`).join('')}</div><div class='shop'>${Object.keys(cat).map(k=>{const it=cat[k],own=!it[2]||u.includes(TAB+':'+k);return `<button class='it ${eq===k?'on':''}' data-it='${k}'>${PF.prev(TAB,k)}<b>${esc(it[1])}</b><small>${eq===k?'✔ En uso':own?'Usar':'🔥 '+it[2]}</small></button>`}).join('')}</div><div id='shs' class='mut' style='margin-top:8px'></div></div>
+ `}
+async function buy(k){const x=(D&&D.all||[]).find(a=>a.n===sel);if(!x)return;if(!x.i){$('shs').textContent='Pídele a un líder que abra la app para actualizar esta página.';return}
+ const cur=P[x.i]||{},it=PF.CAT[TAB][k],id=TAB+':'+k,u=cur.u||[],w=cur.w||0,fld={frames:'f',avs:'a',tits:'t',bans:'b'}[TAB];
+ if(it[2]&&!u.includes(id)){if(w<it[2]){$('shs').textContent='Te faltan '+(it[2]-w)+' 🔥. ¡Juega para ganar más!';return}await savePh({[fld]:k,w:w-it[2],u:[...u,id]},'🎉 ¡Desbloqueado y puesto!')}
+ else await savePh({[fld]:k},'✅ Listo')}
+function card(d,x){
+ const lv=d.lv||[],L=lv.find(l=>x.t>=l.t)||{t:0,n:'Chispa',e:'✨'},nx=lv.slice().reverse().find(l=>l.t>x.t),
+  pct=nx?Math.max(4,Math.round((x.t-L.t)*100/(nx.t-L.t))):100,
+  rank=[...(d.all||[])].sort((a,b)=>b.t-a.t).findIndex(a=>a.n===x.n)+1,tot=(d.all||[]).length;
+ return `<div class='sec hero' style='${PF.ban(P[x.i])}'><div class='ring' style='--p:${pct}'>${pav(x,78)}</div><h2 style='margin-top:10px'>${esc(x.n)}</h2>${PF.tit(P[x.i])}<div class='lvl'>${L.e}</div><div><b>Nivel ${esc(L.n)}</b></div>
+ <div class='big' style='margin-top:10px'>${x.t}</div><div class='mut'>puntos este mes${x.t>0&&rank?' · puesto '+rank+' de '+tot:''}</div>
+ <div class='pbar'><i style='width:${pct}%'></i></div>
+ <div class='mut'>${nx?'Te faltan <b>'+(nx.t-x.t)+'</b> puntos para el nivel '+esc(nx.n)+' '+nx.e:'¡Estás en el nivel más alto! 🌋'}</div></div>
+ <div class='sec' style='--i:1'><div class='grid'><div class='kp'><b>🔥 ${x.s||0}</b><span class='mut'>servicios seguidos</span></div><div class='kp'><b>${x.p||0}%</b><span class='mut'>asistencia</span></div><div class='kp'><b>${x.a||0}</b><span class='mut'>pts por asistir</span></div><div class='kp'><b>${x.d||0}</b><span class='mut'>pts por devocionales</span></div></div>
+ <div class='mut' style='margin-top:10px'>Racha: +${x.b||0} pts. Cada 4 servicios seguidos suma un bonus.${x.x?' Puntos extra: +'+x.x+'.':''}</div></div>
+ <div class='sec'><h2>📸 Mi foto y marco</h2><div style='text-align:center;margin:6px 0'>${pav(x,92)}</div><input type='file' id='ph' accept='image/*' hidden><button class='btn pri' id='pick'>📷 Elegir mi foto</button><button class='btn' id='rmph'>🗑️ Quitar mi foto (usar avatar)</button><div class='mut' style='margin-top:8px'>Las fotos nuevas las aprueba un líder antes de aparecer en público.</div><div id='phs' class='mut' style='margin-top:8px'></div></div>
+ ${shop(x)}<div class='sec'><h2>🏅 Mis logros</h2>${(x.g||[]).length?x.g.map(g=>`<span class='chip'>${esc(g)}</span>`).join(''):`<div class='mut'>Aún no tienes logros. ¡Sigue asistiendo y entregando tu devocional!</div>`}</div>
+ <div class='sec'><h2>🙏 Pedir oración</h2><div class='mut'>Tu petición solo la ven los líderes.</div><textarea id='pt' maxlength='500' placeholder='Escribe tu petición…'></textarea><button class='btn pri' id='sp'>Enviar petición</button><div id='ps' class='mut' style='margin-top:8px'></div></div><div class='sec'><h2>📖 Mi devocional de la semana</h2><div class='mut'>Cuéntanos qué aprendiste. Tu líder lo lee.</div><textarea id='rt' maxlength='500' placeholder='¿Qué te habló Dios esta semana?'></textarea><button class='btn pri' id='sr'>Enviar reflexión</button><div id='rs' class='mut' style='margin-top:8px'></div></div><button class='btn' id='chg'>No soy yo / cambiar de nombre</button><a class='lnk' href='ranking.html'>Ver el ranking</a><a class='lnk' href='privacidad.html'>Aviso de privacidad</a>`}
+function lst(d){const all=(d.all||[]).filter(a=>!q||a.n.toLowerCase().includes(q.toLowerCase()));return all.map(a=>`<button class='btn' data-n='${esc(a.n)}'>${pav(a,26)} &nbsp;${esc(a.n)}</button>`).join('')||`<div class='mut' style='margin-top:10px'>No encontramos ese nombre.</div>`}
+function view(){
+ if(!D)return empty('🔥','Aún no hay datos.');
+ if(D.off)return empty('🔒','Esta página no está disponible por ahora.');
+ const x=(D.all||[]).find(a=>a.n===sel);
+ if(x)return card(D,x);
+ return `<div class='sec'><h2>¿Quién eres?</h2><input id='q' placeholder='Busca tu nombre' autocomplete='off' value='${esc(q)}'><div id='lst'>${lst(D)}</div></div>`}
+function draw(){$('m').innerHTML=view();if(D&&D.mo)$('mo').textContent=MN[+D.mo.slice(5)-1].toUpperCase()+' '+D.mo.slice(0,4)}
+async function send(k){const x=(D&&D.all||[]).find(a=>a.n===sel),ta=$(k==='p'?'pt':'rt'),st=$(k==='p'?'ps':'rs');if(!x||!ta)return;const t=ta.value.trim();
+ if(t.length<3){st.textContent='Escribe un poco más 🙏';return}
+ if(!x.i){st.textContent='Pídele a un líder que abra la app para actualizar esta página.';return}
+ let lt=0;try{lt=+localStorage.getItem('jf-last')||0}catch(e){}if(Date.now()-lt<30000){st.textContent='Espera unos segundos antes de enviar otro mensaje.';return}
+ const dt=new Date(),d=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+ try{await setDoc(doc(fs,'inbox','i'+Date.now()+Math.random().toString(36).slice(2,6)),{k,i:x.i,n:x.n,t:t.slice(0,500),d,c:Date.now()});try{localStorage.setItem('jf-last',String(Date.now()))}catch(e){}ta.value='';st.textContent=k==='p'?'✅ Enviada. ¡Estamos orando por ti! 🙏':'✅ ¡Gracias por tu reflexión! 🔥'}
+ catch(e){st.textContent='⚠️ No se pudo enviar. Intenta de nuevo.'}}
+async function sendPend(p){const x=(D&&D.all||[]).find(a=>a.n===sel);if(!x||!x.i){$('phs').textContent='Pídele a un líder que abra la app para actualizar esta página.';return}
+ try{await setDoc(doc(fs,'fotoPend',x.i),{p,c:Date.now()});$('phs').textContent='✅ ¡Listo! Un líder revisará tu foto antes de mostrarla.'}catch(e){$('phs').textContent='⚠️ No se pudo enviar. Intenta de nuevo.'}}
+document.addEventListener('change',async e=>{if(e.target.id!=='ph'||!e.target.files[0])return;$('phs').textContent='Subiendo…';try{await sendPend(await shrink(e.target.files[0]))}catch(x){$('phs').textContent='⚠️ No pudimos leer esa imagen.'}});
+document.addEventListener('click',e=>{const fb=e.target.closest('[data-f]');if(fb){savePh({f:fb.dataset.f},'✅ Marco guardado');return}if(e.target.id==='pick'){$('ph').click();return}if(e.target.id==='rmph'){savePh({p:''},'Foto quitada');return}
+ const tb=e.target.closest('[data-tab]');if(tb){TAB=tb.dataset.tab;draw();return}const ib=e.target.closest('[data-it]');if(ib){buy(ib.dataset.it);return}
+ const b=e.target.closest('[data-n]');if(b){sel=b.dataset.n;try{localStorage.setItem('jf-me',sel)}catch(x){}draw();return}
+ if(e.target.id==='sp'||e.target.id==='sr'){send(e.target.id==='sp'?'p':'r');return}
+ if(e.target.id==='chg'){sel='';q='';try{localStorage.removeItem('jf-me')}catch(x){}draw()}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('lst').innerHTML=lst(D)}});
+if(String(CFG.firebaseConfig.apiKey).startsWith('PEGA'))$('m').innerHTML=empty('⚙️','Falta la configuración de Firebase.');
+else{fs=getFirestore(initializeApp(CFG.firebaseConfig));
+ onSnapshot(collection(fs,'photos'),sn=>{P={};sn.docs.forEach(x=>{P[x.id]=x.data()});const ae=document.activeElement&&document.activeElement.id;if(D&&!['pt','rt','q'].includes(ae))draw()},()=>{});
+ onSnapshot(doc(fs,'public','ranking'),sn=>{D=sn.exists()?sn.data():null;const ae=document.activeElement&&document.activeElement.id;if(ae==='pt'||ae==='rt')return;if(ae!=='q')draw();else $('lst').innerHTML=lst(D||{})},()=>{$('m').innerHTML=empty('📡','No se pudo cargar. Revisa tu conexión.')})}
+</script>
+</body>
+</html>

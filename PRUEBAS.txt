@@ -1,0 +1,39 @@
+LISTA DE PRUEBAS ANTES DE ABRIR LA APP A LOS JÓVENES
+(Hazla con 2 líderes, en al menos 2 celulares distintos y 1 computador.)
+
+CELULARES (Android y iPhone si es posible)
+[ ] Iniciar sesión con "Recordarme" activado y desactivado.
+[ ] Cerrar y abrir la app: ¿sigue la sesión o pide clave, según lo elegido?
+[ ] Instalar la app en la pantalla de inicio. ¿Se ve bien el ícono y la barra superior?
+[ ] Tomar asistencia: Presente, Tarde, Falta, Justificada, deslizar tarjeta y Deshacer.
+[ ] Apagar los datos del celular, marcar 3 asistencias y volver a prender: ¿se sincronizaron? El aviso de arriba debe pasar de "Guardando…" a "Todo guardado".
+[ ] Check-in con QR: abrir, escanear con otro celular, ver que quede marcado.
+[ ] Escáner de carnés: imprimir un carné y escanearlo.
+[ ] Girar la pantalla y usar el teclado: ¿se tapan botones?
+
+PANTALLAS PÚBLICAS (sin sesión, en una ventana de incógnito)
+[ ] ranking.html: ¿se ven puntos, rachas y cuadro de honor?
+[ ] mi.html: elegir un nombre, enviar una petición de oración y una foto.
+[ ] La foto NO debe verse hasta que un líder la apruebe en Más > Bandeja.
+[ ] Un joven marcado como "No mostrar en pantallas públicas" NO debe aparecer.
+[ ] juegos.html: jugar una ronda y ver que sumen Llamas.
+
+LÍDERES Y PERMISOS
+[ ] Crear un líder y probar que entra. Restablecer su clave y probar de nuevo.
+[ ] Crear una cuenta con rol Pastor: solo esa cuenta debe ver las notas pastorales.
+[ ] Descargar el respaldo y abrir el archivo para confirmar que tiene datos.
+
+ACCESIBILIDAD
+[ ] Subir el tamaño de letra del celular al máximo: ¿se sigue leyendo todo?
+[ ] Probar con el modo oscuro y el claro.
+[ ] Navegar con el teclado en el computador (Tab): se debe ver dónde está el foco.
+
+Si algo falla, anota: celular, navegador y qué estabas haciendo.
+
+DISEÑO NUEVO
+[ ] Abrir la app en tema claro y en oscuro (botón ☀️/🌙): ¿se leen bien los textos y botones?
+[ ] En el celular: el saludo, el buscador y la barra de abajo no se tapan entre sí ni con el botón + ni con el Asistente.
+[ ] En el computador (ancho mayor a 900 px): la barra lateral de íconos muestra el nombre al dejar el cursor encima.
+[ ] Abrir ranking.html, mi.html, juegos.html y checkin.html en claro y en oscuro.
+[ ] Modo pantalla (TV) del ranking: debe verse oscuro.
+[ ] Asistente: toca una sugerencia y verifica que te lleve a la pantalla correcta.

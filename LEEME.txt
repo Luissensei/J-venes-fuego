@@ -1,0 +1,63 @@
+APP DE ASISTENCIA - JÓVENES DE FUEGO (guía de instalación)
+
+Necesitas: una cuenta de Google. Todo es gratis.
+
+PASO 1. Crear el proyecto
+- Entra a https://console.firebase.google.com y toca "Crear un proyecto".
+- Nombre: jovenes-de-fuego. Puedes desactivar Google Analytics. Toca Crear.
+
+PASO 2. Activar el inicio de sesión
+- Menú Compilación > Authentication > "Comenzar".
+- En "Sign-in method" elige "Correo electrónico/contraseña", actívalo y guarda.
+
+PASO 3. Crear la base de datos
+- Menú Compilación > Firestore Database > "Crear base de datos".
+- Elige una región cercana (por ejemplo us-east1) y modo "producción".
+- Ve a la pestaña "Reglas", borra lo que haya, pega todo el contenido del archivo firestore.rules y toca "Publicar".
+
+PASO 4. Conectar la app
+- Configuración del proyecto (engranaje) > "Tus apps" > ícono web (</>).
+- Ponle un nombre y toca "Registrar app". Copia los valores de firebaseConfig.
+- Abre firebase-config.js y reemplaza cada "PEGA_AQUI" por tus valores.
+
+PASO 5. Crear el primer administrador (una sola vez)
+- Authentication > Usuarios > "Agregar usuario".
+  Correo: TUUSUARIO@jovenesdefuego.app   (ejemplo: admin@jovenesdefuego.app)
+  Contraseña: la que quieras (6 o más caracteres).
+- Copia el "UID" que aparece en esa fila.
+- Firestore Database > "Iniciar colección" > ID: users > ID del documento: pega el UID.
+  Campos (tipo string): name = tu nombre,  user = admin (lo que va antes de @),  role = admin
+- En la app entrarás con usuario "admin" y esa contraseña.
+
+PASO 6. Publicar la app
+- Entra a https://app.netlify.com/drop (crea una cuenta gratis).
+- Arrastra la CARPETA jovenes-de-fuego-app completa (ya con tu firebase-config.js).
+- Te da un enlace. Puedes cambiar el nombre en Site settings > Change site name.
+
+PASO 7. Instalar en el celular
+- Abre el enlace en Chrome > tres puntos > "Instalar app" o "Agregar a pantalla de inicio".
+
+DESPUÉS
+- Los demás líderes los creas desde la app, en la pestaña "Líderes" (como administrador).
+- Si un líder olvida su contraseña: Líderes > "Restablecer clave", escribe una nueva y guarda. No hace falta borrar la cuenta.
+- Cada vez que actualices las reglas, copia TODO firestore.rules en Firestore > Reglas y toca "Publicar". Esta versión agrega reglas nuevas (visitantes, oración, agenda, check-in QR, historial).
+- Check-in con QR: en Asistencia toca "Abrir check-in" y muestra el código. Los jóvenes lo escanean, eligen su nombre y quedan marcados. Ciérralo al terminar.
+- Pantallas públicas (sin contraseña): ranking.html (ranking) y mi.html (cada joven ve su progreso). Se activan en Cuenta > Pantalla pública.
+- Peticiones y reflexiones de los jóvenes: las envían desde mi.html y llegan a la pestaña "Bandeja" (Más > Bandeja). Tú decides si las guardas.
+- Carnés con QR: Jóvenes > "Imprimir carnés". Al llegar, en Asistencia toca "Escanear carnés" y apunta la cámara al carné.
+- Importar jóvenes: Jóvenes > "Importar" (Excel o CSV). Hay una plantilla CSV de ejemplo.
+- Seguridad: Cuenta > "Seguridad" para poner un PIN y cerrar sesión por inactividad.
+- Puntos extra: Más > Puntos extra (administrador). Eliges a uno o varios jóvenes, el motivo y los puntos. Suman al ranking del mes de la fecha elegida y se pueden quitar.
+- Fotos con aprobación: los jóvenes suben su foto en mi.html y queda en espera. En Más > Bandeja la apruebas o la rechazas. Las fotos ya publicadas aparecen ahí también, con el botón Quitar.
+- Pastor: en Líderes puedes poner el rol "Pastor" a una cuenta. Solo esa cuenta ve las notas pastorales.
+- Privacidad: en la ficha de cada joven puedes ponerle apodo y marcar "No mostrar en las pantallas públicas". En Cuenta eliges si el ranking muestra nombre e inicial, iniciales o apodos.
+- Aviso de privacidad: abre privacidad.html y escribe tu correo o teléfono de contacto en la sección 9 antes de compartirla.
+- Pruebas: sigue la lista de PRUEBAS.txt con 2 líderes antes de abrir la app a todos.
+- Respaldo: Cuenta > "Descargar respaldo" guarda todos los datos en un archivo. Hazlo cada mes.
+- Los datos que probaste en la versión de Claude no se pasan a esta; empieza vacía.
+
+- Respaldo automático: cada semana la app guarda una copia de los datos en Firebase (colección «backups», las últimas 4). Sigue siendo buena idea descargar el archivo cada mes.
+- Historial: Más > Historial. Los cambios de asistencia tienen el botón «Deshacer este cambio».
+
+- Diseño: la app abre en tema claro. Con el botón ☀️/🌙 (arriba a la derecha) cada persona puede cambiar a oscuro; la elección se guarda y la usan también ranking.html, mi.html y juegos.html. El modo pantalla (TV) siempre es oscuro.
+- Asistente: el botón flotante «Asistente» resume lo pendiente del día (asistencia, seguimientos, mensajes, cumpleaños, devocionales). Son sugerencias automáticas con los datos de la app, no una IA externa.

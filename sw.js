@@ -1,0 +1,5 @@
+const C='jf-v21',SHELL=['./','./index.html','./firebase-config.js','./manifest.json','./ranking.html','./mi.html','./checkin.html','./juegos.html','./preguntas.js','./perfil.js','./tema.css','./app.css','./paletas.css','./paleta.js','./icon-192.png','./icon-512.png','./base.css','./nuevo.css','./nuevo.js','./inter.woff2','./privacidad.html','./favicon-32.png','./apple-touch-icon.png'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(r.method!=='GET'||/\.(mp3|m4a|ogg|wav|aac)$/i.test(u.pathname))return;if(u.origin!==location.origin&&u.hostname!=='www.gstatic.com')return;
+e.respondWith(fetch(r).then(res=>{const cp=res.clone();caches.open(C).then(c=>c.put(r,cp)).catch(()=>{});return res}).catch(()=>caches.match(r).then(m=>m||caches.match('./index.html'))))});

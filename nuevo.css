@@ -1,0 +1,130 @@
+/* =====================================================================
+   DISEÑO NUEVO · panel claro, tarjetas suaves, barra lateral de íconos
+   Se carga al final en todas las páginas. Funciona en modo claro y oscuro.
+   ===================================================================== */
+:root{--r-card:20px;--sh1:0 1px 2px rgba(23,20,31,.05),0 10px 28px rgba(23,20,31,.07);--orb1:#9aa8ff;--orb2:#4b2bff;--orb3:#25177f}
+
+/* ---------- Modo claro: variables para TODAS las páginas ---------- */
+html[data-ui=light]{--bg:#f3f4f8;--card:#fff;--ink:#17141f;--mut:#6c6880;--line:#e8e7ef;--acc:#d9400b;--glass:#fff;--bd:#e8e7ef;color-scheme:light}
+html[data-ui=dark]{color-scheme:dark}
+
+/* ---------- Tarjetas y controles (app de líderes) ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh1);backdrop-filter:none}
+.btn{border-radius:14px}
+.btn.pri{background:linear-gradient(135deg,var(--acc),var(--p2,#e8141f))}
+input,select,textarea{background:var(--card);border-color:var(--line)}
+.pill{background:transparent}
+.tb th{letter-spacing:.2px}
+html[data-ui=light] .tb th{background:var(--bg);color:var(--mut)}
+html[data-ui=light] .tb td:first-child{background:var(--card)}
+
+/* ---------- Encabezado compacto (marca) ---------- */
+header{background:transparent!important;color:var(--ink);display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px 0;overflow:visible}
+header::before{display:none!important}
+header .flame,header .embers,header .bar{display:none!important}
+.blogo{width:40px;height:40px;border-radius:12px;object-fit:cover;flex:none;box-shadow:0 2px 10px rgba(23,20,31,.18)}
+header h1{font-size:15px;margin:0;line-height:1.2;color:var(--ink);background:none;-webkit-text-fill-color:currentColor;animation:none;letter-spacing:0;font-weight:800}
+header h1 small{display:block;font-size:10px;letter-spacing:2.5px;color:var(--acc);font-weight:800}
+#sess{display:none!important}
+nav{flex:1 1 100%;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-top:8px}
+nav::-webkit-scrollbar{display:none}
+nav button{display:flex;align-items:center;gap:7px;border-radius:99px!important;padding:9px 14px;background:var(--card);color:var(--mut);border:1px solid var(--line);font-weight:600;white-space:nowrap}
+nav button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+nav button.on::after{display:none!important}
+.ni{display:grid;place-items:center}
+.ni svg,#bnav .bi svg,.tic svg,.tsearch svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+#pcm{color:var(--ink)!important;background:var(--card)!important;border-color:var(--line)!important}
+
+/* ---------- Barra superior: saludo + buscador ---------- */
+.tb{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:2px 0 16px}
+.tbg{flex:1 1 220px;min-width:0}
+.tbh{font-size:26px;font-weight:800;letter-spacing:-.4px;line-height:1.15}
+.tbs{color:var(--mut);font-size:13.5px;margin-top:3px}
+.tbst{font-weight:600}
+.tbr{display:flex;align-items:center;gap:8px}
+.tsearch{display:flex;align-items:center;gap:8px;height:46px;padding:0 18px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--mut);font:inherit;cursor:pointer;min-width:160px;box-shadow:var(--sh1)}
+.tic{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh1);padding:0}
+.tsearch:active,.tic:active{transform:scale(.96)}
+
+/* ---------- Tarjetas de resumen en pastel ---------- */
+.kc{background:linear-gradient(145deg,color-mix(in srgb,var(--c) 17%,var(--card)),color-mix(in srgb,var(--c) 4%,var(--card)));border:1px solid color-mix(in srgb,var(--c) 22%,var(--line))}
+.kc::before{display:none}
+.ki{border-radius:50%;background:color-mix(in srgb,var(--c) 22%,var(--card))}
+.kr{width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),color-mix(in srgb,var(--c) 20%,transparent) 0)}
+.kr::after{content:'';width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--c) 6%,var(--card))}
+.dh{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 16%,var(--card)),color-mix(in srgb,var(--p4,#b81ae8) 10%,var(--card)))}
+
+/* ---------- Navegación inferior (celular) ---------- */
+#bnav{background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:0 12px 34px rgba(23,20,31,.16)!important}
+#bnav button{color:var(--mut)}
+#bnav button.on{color:var(--acc)}
+#bnav .bi{display:grid;place-items:center}
+#bnav .bi svg{width:23px;height:23px}
+#bnav button.on::before{display:none}
+
+/* ---------- Barra lateral de íconos (modo computador) ---------- */
+html.pc header{width:84px!important;padding:18px 10px 14px!important;align-items:center;flex-wrap:nowrap;flex-direction:column;gap:0;background:var(--card)!important;border-right:1px solid var(--line)!important;border-bottom:0}
+html.pc header h1{display:none}
+html.pc .blogo{width:48px;height:48px;border-radius:14px;margin-bottom:6px}
+html.pc nav{flex:0 0 auto;flex-direction:column;align-items:center;overflow:visible;margin-top:14px!important;gap:6px!important}
+html.pc nav button{width:48px!important;height:48px;padding:0!important;justify-content:center;border-radius:50%!important;background:transparent!important;color:var(--mut)!important;border:0}
+html.pc nav button .nl{display:none}
+html.pc nav button:hover{background:var(--bg)!important;color:var(--ink)!important;transform:none!important}
+html.pc nav button.on{background:var(--ink)!important;color:var(--card)!important;box-shadow:none!important}
+html.pc main{margin-left:84px}
+html.pc #pcm{position:static;margin-top:auto;align-self:center;width:44px;height:44px;padding:0;border-radius:50%;font-size:0!important}
+html.pc #pcm::before{content:'📱';font-size:18px}
+
+/* ---------- Asistente flotante ---------- */
+.aib{position:fixed;left:16px;bottom:calc(84px + var(--lift,70px) + env(safe-area-inset-bottom,0px));z-index:46;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 16px 6px 6px;box-shadow:0 10px 28px rgba(23,20,31,.2);cursor:pointer;font:600 13px/1 var(--font,system-ui)}
+.orb{width:38px;height:38px;border-radius:50%;flex:none;position:relative;background:radial-gradient(circle at 35% 30%,var(--orb1),var(--orb2) 55%,var(--orb3));box-shadow:0 0 18px #5b4bff88;animation:orbp 3.2s ease-in-out infinite}
+.orb::before,.orb::after{content:'';position:absolute;top:13px;width:5px;height:10px;border-radius:5px;background:#fff;animation:blink 4.5s infinite}
+.orb::before{left:11px}.orb::after{right:11px}
+.aic{min-width:20px;height:20px;border-radius:99px;background:var(--acc);color:#fff;display:grid;place-items:center;font-size:11px;padding:0 6px}
+.aibk{position:fixed;inset:0;z-index:47;background:rgba(10,8,20,.28)}
+.aip{position:fixed;left:12px;right:12px;bottom:calc(140px + var(--lift,70px) + env(safe-area-inset-bottom,0px));max-width:430px;z-index:48;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:16px;box-shadow:0 22px 60px rgba(23,20,31,.35);max-height:62vh;overflow-y:auto;animation:rise .25s both}
+.aitip{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;margin-top:8px;padding:12px;border-radius:16px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg) 70%,var(--card));color:var(--ink);font:inherit;cursor:pointer}
+.aitip:active{transform:scale(.98)}
+.aie{font-size:20px;line-height:1.2}
+html.pc .aib{left:100px;bottom:20px}
+html.pc .aip{left:100px;bottom:84px}
+@keyframes orbp{50%{transform:translateY(-3px);box-shadow:0 0 28px #5b4bffcc}}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+
+/* =====================================================================
+   PÁGINAS PÚBLICAS (ranking, Mi progreso, juegos, check-in, privacidad)
+   ===================================================================== */
+#thm{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:60;width:42px;height:42px;border-radius:50%;border:1px solid var(--line,#ffffff33);background:var(--card,rgba(255,255,255,.12));color:var(--ink);font-size:18px;cursor:pointer;box-shadow:var(--sh1);display:grid;place-items:center;padding:0}
+body.tv #thm{display:none}
+
+html.pub[data-ui=light] body{background:radial-gradient(900px 480px at 85% -10%,color-mix(in srgb,var(--acc) 12%,transparent),transparent 60%),radial-gradient(700px 420px at 0 105%,color-mix(in srgb,var(--p4,#b81ae8) 10%,transparent),transparent 60%),#f3f4f8!important;color:var(--ink)}
+html.pub[data-ui=light] #pe{display:none}
+html.pub[data-ui=light] h1{background:linear-gradient(90deg,var(--p2,#e8141f),var(--p4,#b81ae8))!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;animation:none!important}
+html.pub[data-ui=light] h2{color:var(--ink)}
+html.pub[data-ui=light] .sec,html.pub[data-ui=light] .card{background:#fff!important;border:1px solid var(--line)!important;box-shadow:var(--sh1)!important;backdrop-filter:none!important}
+html.pub[data-ui=light] input,html.pub[data-ui=light] textarea,html.pub[data-ui=light] select{background:#fff!important;color:var(--ink)!important;border-color:#d9d8e3!important}
+html.pub[data-ui=light]:not(.jg) .btn:not(.pri){background:#fafafd!important;color:var(--ink)!important;border-color:var(--line)!important}
+html.pub[data-ui=light] .btn.pri{background:linear-gradient(135deg,var(--acc),var(--p2,#e8141f))!important;color:#fff!important;border-color:transparent!important}
+html.pub[data-ui=light] .kp,html.pub[data-ui=light] .it,html.pub[data-ui=light] .frs button,html.pub[data-ui=light] .zc,html.pub[data-ui=light] .tabs{background:rgba(23,20,31,.04)!important;border-color:var(--line)!important}
+html.pub[data-ui=light] .tab{color:var(--mut)}
+html.pub[data-ui=light] .tab.on{color:#fff}
+html.pub[data-ui=light] .frs button.on,html.pub[data-ui=light] .it.on{background:color-mix(in srgb,var(--acc) 12%,#fff)!important;border-color:var(--acc)!important}
+html.pub[data-ui=light] .pbar,html.pub[data-ui=light] .prog{background:rgba(23,20,31,.08)!important}
+html.pub[data-ui=light] .rk{background:rgba(23,20,31,.07)}
+html.pub[data-ui=light] .rk.r1,html.pub[data-ui=light] .rk.r2,html.pub[data-ui=light] .rk.r3{color:#2b1300}
+html.pub[data-ui=light] .ring{background:conic-gradient(var(--acc) calc(var(--p)*1%),rgba(23,20,31,.1) 0)}
+html.pub[data-ui=light] .ring>*{box-shadow:0 0 0 6px #fff}
+html.pub[data-ui=light] .lnk{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--acc),var(--p4,#b81ae8)) border-box;color:var(--ink)}
+html.pub[data-ui=light] .lv,html.pub[data-ui=light] .chip{color:var(--ink)}
+html.pub[data-ui=light] .o{background:#fff!important;color:var(--ink)!important}
+html.pub[data-ui=light] .o.ok{background:#dcfce7!important}
+html.pub[data-ui=light] .o.no{background:#fee2e2!important}
+html.pub[data-ui=light] .m{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 14%,#fff),#efe3fb)}
+html.pub[data-ui=light] .m.up{background:#fff}
+html.pub[data-ui=light] .top a,html.pub[data-ui=light] .top button{background:#fff;color:var(--ink);border-color:var(--line)}
+html.pub[data-ui=light] .pill{color:var(--ink)}
+html.pub[data-ui=light] .sub,html.pub[data-ui=light] .mut{color:var(--mut)}
+html.pub[data-ui=light] main a:not(.lnk):not(.btn){color:#c2410c}
+html.pub[data-ui=light] .pcol .pn{color:var(--ink)}
+html.pub[data-ui=light] .p2 .pb{background:linear-gradient(180deg,#e7e9ef,#aab0bd)}
+html.pub[data-ui=light] .warnbox{background:#fef3c7;color:#78350f}

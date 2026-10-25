@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function ok() { return request.auth != null && exists(/databases/$(db)/documents/users/$(request.auth.uid)); }
+    // Todos los líderes registrados tienen permisos de administrador
+    function adm() { return ok(); }
+    function sOk(k) { return request.resource.data.get(k, '') is string && request.resource.data.get(k, '').matches('^[a-z0-9_]{0,20}$'); }
+    function pas() { return ok() && get(/databases/$(db)/documents/users/$(request.auth.uid)).data.get('role','') == 'pastor'; }
+    function ci(c) { return get(/databases/$(db)/documents/public/$('ci_' + c)).data; }
+    match /users/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || adm());
+      allow write: if adm();
+    }
+    match /members/{id} { allow read: if ok(); allow write: if adm(); }
+    match /attendance/{id} { allow read, write: if ok(); }
+    match /followups/{id} { allow read, write: if ok(); }
+    match /devotionals/{id} { allow read, write: if ok(); }
+    match /visitors/{id} { allow read, write: if ok(); }
+    match /prayers/{id} { allow read, write: if ok(); }
+    match /events/{id} { allow read, write: if ok(); }
+    match /bonus/{id} { allow read: if ok(); allow write: if adm(); }
+    match /pastoral/{id} { allow read, write: if pas(); }
+    match /backups/{id} { allow read, write: if ok(); }
+    match /inbox/{id} {
+      allow read, delete: if ok();
+      allow update: if false;
+      allow create: if request.resource.data.keys().hasOnly(['k','i','n','t','d','c'])
+        && request.resource.data.k in ['p','r']
+        && request.resource.data.i is string && request.resource.data.i.size() < 40
+        && request.resource.data.n is string && request.resource.data.n.size() < 60
+        && request.resource.data.t is string && request.resource.data.t.size() >= 3 && request.resource.data.t.size() <= 600
+        && request.resource.data.d is string && request.resource.data.d.size() == 10
+        && request.resource.data.c is number
+        && request.resource.data.c > request.time.toMillis() - 3600000
+        && request.resource.data.c < request.time.toMillis() + 3600000
+        && get(/databases/$(db)/documents/public/ranking).data.get('off', false) == false;
+    }
+    match /audit/{id} {
+      allow read: if adm();
+      allow create: if ok();
+      allow update, delete: if false;
+    }
+    match /checkins/{id} {
+      allow read, delete: if ok();
+      allow update: if false;
+      allow create: if request.resource.data.keys().hasOnly(['m','d','s','c','t'])
+        && request.resource.data.m is string && request.resource.data.m.size() < 40
+        && request.resource.data.c is string && request.resource.data.c.size() < 20
+        && id == request.resource.data.c + '_' + request.resource.data.m
+        && request.resource.data.t is number
+        && request.resource.data.t > request.time.toMillis() - 3600000
+        && request.resource.data.t < request.time.toMillis() + 3600000
+        && ci(request.resource.data.c).open == true
+        && ci(request.resource.data.c).d == request.resource.data.d
+        && ci(request.resource.data.c).s == request.resource.data.s;
+    }
+    match /public/{id} {
+      allow get: if true;
+      allow list: if ok();
+      allow write: if ok() && (!id.matches('al_.*') || adm());
+    }
+    match /photos/{id} {
+      function phBase() {
+        return request.resource.data.keys().hasOnly(['p','f','a','b','t','u','w','c'])
+          && request.resource.data.get('p','') is string && request.resource.data.get('p','').size() < 60000
+          && (request.resource.data.get('p','') == '' || request.resource.data.get('p','').matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$'))
+          && sOk('f') && sOk('a') && sOk('b') && sOk('t')
+          && request.resource.data.get('u',[]) is list && request.resource.data.get('u',[]).size() <= 400
+          && request.resource.data.get('w',0) is number && request.resource.data.get('w',0) >= 0 && request.resource.data.get('w',0) <= 100000
+          && request.resource.data.c is number
+          && request.resource.data.c > request.time.toMillis() - 3600000
+          && request.resource.data.c < request.time.toMillis() + 3600000
+          && exists(/databases/$(db)/documents/members/$(id));
+      }
+      allow read: if true;
+      allow delete: if ok();
+      // Un joven (sin sesión) solo puede cambiar marco, avatar, título, fondo y Llamas (con tope por escritura).
+      // La foto solo la publica un líder (aprobada); el joven únicamente puede quitarla.
+      allow create: if phBase()
+        && (ok() || (request.resource.data.get('p','') == '' && request.resource.data.get('w',0) <= 100));
+      allow update: if phBase()
+        && (ok() || ((request.resource.data.get('p','') == '' || request.resource.data.get('p','') == resource.data.get('p',''))
+                     && request.resource.data.get('w',0) <= resource.data.get('w',0) + 100));
+    }
+    // Fotos nuevas en espera de aprobación: solo las leen los líderes.
+    match /fotoPend/{id} {
+      allow read, delete: if ok();
+      allow create, update: if request.resource.data.keys().hasOnly(['p','c'])
+        && request.resource.data.p is string && request.resource.data.p.size() < 60000
+        && request.resource.data.p.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$')
+        && request.resource.data.c is number
+        && request.resource.data.c > request.time.toMillis() - 3600000
+        && request.resource.data.c < request.time.toMillis() + 3600000
+        && exists(/databases/$(db)/documents/members/$(id));
+    }
+    match /settings/{id} { allow read: if ok(); allow write: if adm(); }
+  }
+}

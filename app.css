@@ -1,0 +1,73 @@
+/* ===== Capa elegante (aplica a toda la app de líderes) ===== */
+body{background:radial-gradient(900px 420px at 85% -8%,color-mix(in srgb,var(--acc) 8%,transparent),transparent 60%),var(--bg);-webkit-font-smoothing:antialiased}
+header{background:linear-gradient(135deg,var(--hd1),var(--hd2) 70%,var(--hd3));overflow:hidden}
+h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:.3px}h1 small{font-family:system-ui,sans-serif}
+.card{border-radius:16px;padding:16px 18px;box-shadow:0 1px 3px #0000001a}
+.card>b:first-child{font-size:16px;letter-spacing:.2px}
+.btn{border-radius:12px;transition:transform .12s,box-shadow .2s,background .2s}.btn:active{transform:scale(.97)}
+.btn.pri{background:linear-gradient(135deg,var(--acc),var(--p2));border-color:transparent;box-shadow:0 6px 16px color-mix(in srgb,var(--p2) 25%,transparent)}
+input,select,textarea{border-radius:12px;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 20%,transparent)}
+.pill{background:#ffffff08}
+nav button{border-radius:12px 12px 0 0;transition:background .2s}
+#bnav{border-radius:24px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* ===== Botón de modo ===== */
+#pcm{position:absolute;top:12px;right:12px;z-index:5;border:1px solid #ffffff33;background:#ffffff1a;color:#fff;font:600 12px system-ui;padding:7px 11px;border-radius:99px;cursor:pointer}
+@media (max-width:899px){#pcm{display:none}}
+/* ===== Modo computador: barra lateral + cuadrícula ===== */
+html.pc header{position:fixed;left:0;top:0;bottom:0;width:272px;z-index:50;padding:24px 16px 16px;display:flex;flex-direction:column;overflow-y:auto;border-right:1px solid #ffffff14}
+html.pc #pcm{position:static;margin-top:auto;align-self:stretch}
+html.pc nav{display:flex!important;flex-direction:column;overflow:visible;margin-top:18px;gap:4px}
+html.pc nav button{width:100%;text-align:left;background:transparent;color:#e9dfe9;border-radius:12px;padding:12px 14px}
+html.pc nav button:hover{background:#ffffff14}
+html.pc nav button.on{background:linear-gradient(135deg,var(--acc),var(--p2));color:#fff;box-shadow:0 6px 18px color-mix(in srgb,var(--p2) 33%,transparent)}
+html.pc .bar{display:none}
+html.pc #bnav{display:none!important}
+html.pc main{margin-left:272px;max-width:none;padding:32px 44px 64px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px;align-items:start}
+html.pc main>*{grid-column:1/-1;margin-bottom:0}
+html.pc main>.card{grid-column:auto}
+html.pc main>.card:has(table),html.pc main>.card:has(canvas),html.pc main>.card:has(svg),html.pc main>.card:has(.row.sp input[type=date]){grid-column:1/-1}
+@media (min-width:1600px){html.pc main{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* ===== Inicio estilo panel ===== */
+.dh{position:relative;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 14%,var(--card)),var(--card));padding:20px 22px}
+.dh::after{content:'🔥';position:absolute;right:16px;top:-6px;font-size:84px;opacity:.1}
+.dk{font:700 12px system-ui;letter-spacing:2.5px;color:var(--acc)}.dt{font-family:Georgia,"Times New Roman",serif;font-size:26px;font-weight:700;margin:4px 0 2px}
+.dbadge{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:99px;font:700 12px system-ui;text-transform:capitalize;background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent)}
+.kc{margin:0;position:relative;overflow:hidden;padding:16px 16px 14px 20px}
+.kc::before{content:'';position:absolute;left:0;top:16px;bottom:16px;width:4px;border-radius:0 4px 4px 0;background:var(--c)}
+.kh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ki{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;font-size:16px;background:color-mix(in srgb,var(--c) 18%,transparent)}
+.kv{font-size:36px;font-weight:800;line-height:1.1;margin:8px 0 2px;color:var(--ink)}
+html.pc main>.card.dh{grid-column:1/-1}
+
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:12px}
+@media (max-width:420px){.kv{font-size:30px}.dt{font-size:22px}}
+
+/* ===== Rendimiento: menos animaciones continuas y menos trabajo al desplazarse ===== */
+.flame{filter:none;text-shadow:0 0 14px var(--p1)}.flame,.logo,.embers i{will-change:transform}
+#app>.card:nth-child(n+9){content-visibility:auto;contain-intrinsic-size:auto 170px}
+.enter .card:nth-child(n+8){animation:none}
+.enter .card{animation-duration:.3s}
+#app.sr,#app.sl{animation-duration:.18s}
+input,select,textarea,.btn{transition:none}
+.btn,.card,.pill{-webkit-tap-highlight-color:transparent}
+#app{overscroll-behavior-y:contain}
+
+/* ===== Animaciones nuevas ===== */
+header::before{content:'';position:absolute;inset:-40% -20%;pointer-events:none;background:radial-gradient(40% 50% at 20% 30%,color-mix(in srgb,var(--p1) 42%,transparent),transparent 70%),radial-gradient(35% 45% at 80% 70%,color-mix(in srgb,var(--p4) 40%,transparent),transparent 70%);animation:aur 14s ease-in-out infinite alternate;will-change:transform}
+header>*{position:relative}
+@keyframes aur{to{transform:translate3d(6%,8%,0) rotate(8deg) scale(1.1)}}
+body::before,body::after{content:'';position:fixed;z-index:-1;width:55vmax;height:55vmax;border-radius:50%;pointer-events:none;will-change:transform}
+body::before{top:-22vmax;left:-18vmax;background:radial-gradient(circle,color-mix(in srgb,var(--p1) 14%,transparent),transparent 65%);animation:orb 18s ease-in-out infinite alternate}
+body::after{bottom:-24vmax;right:-20vmax;background:radial-gradient(circle,color-mix(in srgb,var(--p4) 12%,transparent),transparent 65%);animation:orb 22s ease-in-out infinite alternate-reverse}
+@keyframes orb{to{transform:translate3d(8vmax,6vmax,0) scale(1.15)}}
+.btn.pri{position:relative;overflow:hidden}
+.btn.pri::after{content:'';position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(100deg,transparent,#ffffff40,transparent);transform:translateX(-150%) skewX(-20deg);animation:sweep 3.4s ease-in-out infinite;pointer-events:none}
+@keyframes sweep{55%,100%{transform:translateX(350%) skewX(-20deg)}}
+.ki{animation:kib 3.2s ease-in-out infinite}@keyframes kib{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px) rotate(-5deg)}}
+.dh::after{animation:float 5s ease-in-out infinite}
+.kc::before{animation:glw 2.8s ease-in-out infinite alternate}@keyframes glw{from{opacity:.55}to{opacity:1}}
+#bnav button.on{animation:pop .35s}
+@media (hover:hover){.card{transition:transform .2s}.card:hover{transform:translateY(-2px)}html.pc nav button{transition:transform .15s,background .2s}html.pc nav button:hover{transform:translateX(4px)}}

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1a0f22">
+<title>Check-in · Jóvenes de Fuego</title>
+<link rel="icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box}
+:root{--card:#1d1422;--ink:#f4ecf4;--mut:#b9a6d8;--line:#35273d;--acc:#ff7a3d}
+body{margin:0;background:radial-gradient(ellipse at 50% 0,#4a1706 0,#120c14 58%);background-attachment:fixed;color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+header{text-align:center;padding:22px 16px 6px}
+header img{width:76px;border-radius:18px;animation:float 3s ease-in-out infinite}
+h1{margin:10px 0 2px;font-size:24px;letter-spacing:3px;background:linear-gradient(90deg,#ffe81a,#ff7a2a,#e8141f,#ffe81a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+.sub{color:var(--mut)}
+.bar{display:flex;height:5px;margin-top:14px}.bar i{flex:1}
+main{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+.sec{background:#1d1422e6;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;animation:rise .5s both}
+.sec h2{margin:0 0 10px;font-size:18px}
+input{width:100%;font:inherit;color:var(--ink);background:#120c14;border:1px solid var(--line);border-radius:10px;padding:12px;min-height:46px}
+.btn{font:inherit;font-weight:600;border:1px solid var(--line);background:#ffffff0d;color:var(--ink);border-radius:10px;padding:12px 14px;min-height:48px;width:100%;text-align:left;margin-top:6px;cursor:pointer}
+.btn.pri{background:linear-gradient(135deg,#ff5a1f,#e8141f);border-color:transparent;text-align:center}
+.mut{color:var(--mut);font-size:14px}
+.c{text-align:center}.e{font-size:60px;animation:float 3s ease-in-out infinite}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shine{to{background-position:300% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<link rel="stylesheet" href="base.css"><script>(function(){var h=document.documentElement,t='light';try{t=JSON.parse(localStorage.getItem('jf-pref')||'{}').theme||'light'}catch(e){}var d=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);h.dataset.ui=d?'dark':'light';h.dataset.theme=d?'dark':'light';h.classList.add('pub');if(/juegos/.test(location.pathname))h.classList.add('jg');if(/[?&]tv=1/.test(location.search)){h.dataset.ui='dark';h.dataset.theme='dark'}})()</script><link rel="stylesheet" href="nuevo.css"><script src="nuevo.js" defer></script></head>
+<body>
+<header><img src="icon-192.png" alt=""><h1>CHECK-IN</h1><div class="sub">Jóvenes de Fuego</div><div class="bar"><i style="background:#e8141f"></i><i style="background:#2b3bff"></i><i style="background:#b81ae8"></i><i style="background:#ffe81a"></i></div></header>
+<main id="m"><div class="sec mut c">Cargando…</div></main>
+<div style="text-align:center;padding-bottom:30px"><a href="privacidad.html" style="color:#b9a6d8;font-size:13px">Aviso de privacidad</a></div>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getFirestore,doc,setDoc,onSnapshot} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import * as CFG from './firebase-config.js';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const msg=(e,t,s)=>`<div class='sec c'><div class='e'>${e}</div><h2>${t}</h2><div class='mut'>${s||''}</div></div>`;
+const code=new URLSearchParams(location.search).get('c')||'';
+let D=null,q='',pick=null,busy=false,fs=null;
+const KEY='jf-ck-'+code;
+let done='';try{done=localStorage.getItem(KEY)||''}catch(e){}
+function lst(){const l=(D.list||[]).filter(a=>!q||a.n.toLowerCase().includes(q.toLowerCase()));return l.map(a=>`<button class='btn' data-i='${esc(a.i)}' data-n='${esc(a.n)}'>${esc(a.n)}</button>`).join('')||`<div class='mut' style='margin-top:10px'>No encontramos ese nombre. Avísale a un líder.</div>`}
+function view(){
+ if(!code)return msg('🔗','Enlace incompleto','Escanea de nuevo el código QR del servicio.');
+ if(D===undefined||D===null)return msg('🔒','Check-in no disponible','Este código no existe o ya no está activo.');
+ if(!D.open)return msg('🔒','El check-in está cerrado','Pídele a un líder que te marque la asistencia.');
+ if(done)return msg('✅','¡Ya estás registrado!','Quedaste marcado como '+esc(done)+'. ¡Que Dios te bendiga! 🔥');
+ if(pick)return `<div class='sec c'><div class='e'>🙋</div><h2>¿Eres ${esc(pick.n)}?</h2><div class='mut'>${esc(D.sn||'Servicio')}</div><button class='btn pri' id='yes' style='margin-top:14px' ${busy?'disabled':''}>${busy?'Registrando…':'Sí, soy yo'}</button><button class='btn' id='no' style='text-align:center'>No, volver a la lista</button></div>`;
+ return `<div class='sec'><h2>${esc(D.sn||'Servicio')}</h2><div class='mut' style='margin-bottom:10px'>Busca tu nombre y toca para marcar tu asistencia.</div><input id='q' placeholder='Busca tu nombre' autocomplete='off' value='${esc(q)}'><div id='lst'>${lst()}</div></div>`}
+function draw(){$('m').innerHTML=view()}
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.i){pick={i:b.dataset.i,n:b.dataset.n};draw()}
+ else if(b.id==='no'){pick=null;draw()}
+ else if(b.id==='yes'&&!busy){busy=true;draw();
+  try{await setDoc(doc(fs,'checkins',code+'_'+pick.i),{m:pick.i,d:D.d,s:D.s,c:code,t:Date.now()});done=pick.n;try{localStorage.setItem(KEY,done)}catch(x){}}
+  catch(x){busy=false;$('m').innerHTML=msg('⚠️','No se pudo registrar','Si ya te marcaste antes, ya estás en la lista. Si no, intenta de nuevo o avisa a un líder.')+`<button class='btn pri' id='no' style='text-align:center'>Volver</button>`;return}
+  busy=false;pick=null;draw()}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('lst').innerHTML=lst()}});
+if(String(CFG.firebaseConfig.apiKey).startsWith('PEGA'))$('m').innerHTML=msg('⚙️','Falta la configuración de Firebase');
+else if(!code)draw();
+else{fs=getFirestore(initializeApp(CFG.firebaseConfig));
+ onSnapshot(doc(fs,'public','ci_'+code),sn=>{D=sn.exists()?sn.data():null;if(!pick&&!(document.activeElement&&document.activeElement.id==='q'))draw();else if(document.activeElement&&document.activeElement.id==='q')$('lst').innerHTML=D&&D.open?lst():''},()=>{$('m').innerHTML=msg('📡','No se pudo cargar','Revisa tu conexión e intenta de nuevo.')})}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1a0f22">
+<title>Ranking · Jóvenes de Fuego</title>
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="modulepreload" href="perfil.js"><link rel="stylesheet" href="tema.css"><link rel="stylesheet" href="paletas.css"><link rel="stylesheet" href="base.css"><script src="paleta.js"></script>
+<script>(function(){var h=document.documentElement,t='light';try{t=JSON.parse(localStorage.getItem('jf-pref')||'{}').theme||'light'}catch(e){}var d=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);h.dataset.ui=d?'dark':'light';h.dataset.theme=d?'dark':'light';h.classList.add('pub');if(/juegos/.test(location.pathname))h.classList.add('jg');if(/[?&]tv=1/.test(location.search)){h.dataset.ui='dark';h.dataset.theme='dark'}})()</script><link rel="stylesheet" href="nuevo.css"><script src="nuevo.js" defer></script></head>
+<body>
+<div id="pe"></div>
+<header><img src="icon-192.png" alt=""><h1>RANKING</h1><div class="sub" id="mo">Jóvenes de Fuego</div><div class="bar"><i style="background:#e8141f"></i><i style="background:#2b3bff"></i><i style="background:#b81ae8"></i><i style="background:#ffe81a"></i></div></header>
+<main id="m"><div class="sec empty"><div class="e">🔥</div><div class="mut">Cargando…</div></div></main>
+<a class="lnk" href="juegos.html">🎮 Jugar y aprender</a>
+<a class="lnk" href="mi.html">🔥 Ver mi progreso</a>
+<div style="text-align:center;margin-bottom:8px"><a href="privacidad.html" style="color:#b9a6d8;font-size:13px">Aviso de privacidad</a></div><footer id="up"></footer>
+<button class="tvb" id="tv">📺 Modo pantalla</button><button class="tvb" id="mu" style="display:none;left:auto;right:12px;bottom:140px">🔊 Música</button>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getFirestore,doc,collection,onSnapshot} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import * as CFG from './firebase-config.js';
+import * as PF from './perfil.js';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const PAL=['#e8141f','#2b3bff','#b81ae8','#e8a600','#f97316','#0d9488'];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const av0=(n,s)=>{let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%997;const i=n.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]/g,'').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();return `<span class='av' style='width:${s}px;height:${s}px;background:${PAL[h%PAL.length]};font-size:${Math.round(s*.4)}px'>${esc(i||'?')}</span>`};
+let P={},NI={},D0=null;
+const av=(n,s)=>PF.render(P[NI[n]],av0(n,s),s);
+const lv=(d,t)=>{const l=(d.lv||[]).find(x=>t>=x.t)||{n:'Chispa',e:'✨'};return `<span class='lv'>${l.e} ${l.n}</span>`};
+const empty=(e,t)=>`<div class='sec empty'><div class='e'>${e}</div><div>${t}</div></div>`;
+function view(d){
+ if(!d)return empty('🔥','Aún no hay datos del ranking.');
+ if(d.off)return empty('🔒','El ranking no está disponible por ahora.');
+ const top=(per==='d'?d.topd:per==='w'?d.topw:d.top)||[],mx=Math.max(1,top[0]?top[0].t:1);
+ const pod=top.length?`<div class='podium'>${[1,0,2].filter(j=>top[j]).map(j=>{const x=top[j];return `<div class='pcol p${j+1}'>${av(x.n,j===0?64:52)}<div class='pn'>${esc(x.n)}</div><div class='pp' data-n='${x.t}'>${x.t}</div><div class='pb' style='--h:${Math.round(50+90*x.t/mx)}px;animation-delay:${j*150}ms'>${['🥇','🥈','🥉'][j]}</div></div>`}).join('')}</div>`:'';
+ const rest=top.map((x,j)=>`<div class='li'><div class='row sp'><span class='row' style='min-width:0'><span class='rk r${j+1}'>${j+1}</span>${av(x.n,32)}<span class='nm'>${esc(x.n)}</span>${lv(d,x.t)}${x.g?`<span title='Logros'>${esc(x.g)}</span>`:''}</span><b>${x.t} pts</b></div><div class='pbar'><i style='width:${Math.round(x.t*100/mx)}%;animation-delay:${j*100}ms'></i></div></div>`).join('');
+ const g1=`<div class='g on'><div class='sec' style='--i:0'><h2>🏆 Puntos · ${per==='d'?'hoy':per==='w'?'esta semana':'del mes'}</h2><div class='tabs'>${[['d','Hoy'],['w','Semana'],['m','Mes']].map(k=>`<button class='tab ${per===k[0]?'on':''}' data-per='${k[0]}'>${k[1]}</button>`).join('')}</div>${pod||`<div class='mut'>Aún no hay puntos este mes.</div>`}<div class='lst'>${rest}</div></div></div>`;
+ const rl=(a,m,f)=>`<div class='lst'>${a.map((x,j)=>`<div class='li'><div class='row sp'><span class='row' style='min-width:0'><span class='rk r${j+1}'>${j+1}</span>${av(x.n,32)}<span class='nm'>${esc(x.n)}</span></span><span class='val'>${f(x)}</span></div><div class='pbar'><i style='width:${Math.round(m(x,j)*100)}%;animation-delay:${Math.min(j,12)*60}ms'></i></div></div>`).join('')}</div>`,zr=(a,t)=>a.length?`<div class='zero'><div class='mut'>${t}</div><div class='zc-w'>${a.map(x=>`<span class='zc'>${esc(x.n)}</span>`).join('')}</div></div>`:'';
+ const fl=(d.fiel||[]).slice(0,10),dl=(d.dvs||[]).slice(0,10);
+ const fiel=`<div class='mut' style='margin:-6px 0 6px'>Los que llegan más temprano</div>`+(fl.length?rl(fl,(x,j)=>1-j*.07,x=>`🔥 <b>${x.s}</b>${x.l?` · ⏰ ${x.l}`:''}`):`<div class='mut'>Aún no hay datos.</div>`);
+ const dv=`<div class='mut' style='margin:-6px 0 6px'>Los que entregan más temprano en la semana</div>`+(dl.length?rl(dl,(x,j)=>1-j*.07,x=>`📖 <b>${x.c}</b>${x.l?` · ${esc(x.l)}`:''}`):`<div class='mut'>Aún no hay devocionales este mes.</div>`);
+ const g2=`<div class='g'><div class='sec' style='--i:1'><h2>🔥 Los más fieles <span class='cnt'>Top 10</span></h2><div class='mut' style='margin-bottom:6px'>Servicios seguidos sin faltar</div>${fiel}</div><div class='sec' style='--i:2'><h2>📖 Devocionales del mes <span class='cnt'>Top 10</span></h2>${dv}</div></div>`;
+ const gp=Math.min(100,Math.round((d.gt||0)*100/Math.max(d.goal||1,1)));
+ const hon=(d.honor||[]).map(x=>`<div class='li row sp'><span class='row' style='min-width:0'>${av(x.n,30)}<span><b>${esc(x.n)}</b><div class='mut'>${MN[+x.m.slice(5)-1]} ${x.m.slice(0,4)}</div></span></span><span class='lv'>⭐ ${x.t} pts</span></div>`).join('')||`<div class='mut'>Aún no hay ganadores.</div>`;
+ const fdt=x=>{const z=new Date(x+'T00:00');return z.getDate()+' de '+MN[z.getMonth()]};const evs=(d.ev||[]).length?`<div class='sec' style='--i:5'><h2>📅 Próximas actividades</h2>${d.ev.map(e=>`<div class='li'><b>${esc(e.t)}</b><div class='mut'>📅 ${fdt(e.d)}${e.h?' · '+esc(e.h):''}${e.p?' · 📍 '+esc(e.p):''}${e.c?' · ✅ '+e.c+' confirmados':''}</div></div>`).join('')}</div>`:'';
+ const g3=`<div class='g'><div class='sec' style='--i:3'><h2>🎯 Reto del grupo</h2><div class='big'><span data-n='${d.gt||0}'>${d.gt||0}</span> <span class='mut'>de ${d.goal||0} puntos</span></div><div class='pbar' style='height:14px;margin-top:10px'><i style='width:${gp}%'></i></div><div class='mut' style='margin-top:6px'>${gp>=100?'¡Meta cumplida! 🎉':'¡Entre todos llegamos!'}</div></div><div class='sec' style='--i:4'><h2>🥇 Cuadro de honor</h2>${hon}</div>${evs}</div>`;
+ return g1+g2+g3}
+function countUp(){document.querySelectorAll('[data-n]').forEach(e=>{if(RM)return;const n=+e.dataset.n,t0=performance.now();(function f(t){const k=Math.min((t-t0)/1000,1);e.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})(t0)})}
+let last='',gi=0,tvT=0,D=null,per='m';
+function show(d){const js=JSON.stringify(d||null);if(js===last)return;last=js;
+ D=d;draw();if(document.body.classList.contains('tv'))$('mu').style.display=d&&d.music&&d.music.length?'':'none';
+ $('mo').textContent=d&&d.mo?MN[+d.mo.slice(5)-1].toUpperCase()+' '+d.mo.slice(0,4):'Jóvenes de Fuego';
+ $('up').textContent=d&&d.u?'Actualizado el '+new Date(d.u).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}):'';
+ gi=0;cyc()}
+function draw(){$('m').innerHTML=view(D);countUp();cyc()}
+function cyc(){document.querySelectorAll('.g').forEach((g,k)=>g.classList.toggle('on',k===gi))}
+function tvMode(on){document.body.classList.toggle('tv',on);$('tv').textContent=on?'✖ Salir':'📺 Modo pantalla';clearInterval(tvT);gi=0;cyc();
+ if(on){tvT=setInterval(()=>{const n=document.querySelectorAll('.g').length||1;gi=(gi+1)%n;cyc();countUp()},12000);try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}catch(e){}}
+ else{try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}if(on&&D){per='m';draw()}music(on);$('mu').style.display=on&&D&&D.music&&D.music.length?'':'none'}
+let au=null;
+function music(on){const f=$('yt');if(f)f.remove();if(au){au.pause();au=null}if(!on||!D||!D.music||!D.music.length)return;
+ const a=D.music.filter(x=>x[0]==='a').map(x=>x.slice(2));
+ if(a.length){let k=0;au=new Audio(a[0]);au.volume=.6;au.onended=()=>{k=(k+1)%a.length;au.src=a[k];au.play().catch(()=>{})};au.play().catch(()=>{$('mu').textContent='🔊 Toca para música';au=null});return}
+ const l=D.music.find(x=>x[0]==='l'),v=D.music.filter(x=>x[0]==='v').map(x=>x.slice(2));if(!l&&!v.length)return;
+ const src=l?'https://www.youtube.com/embed/videoseries?list='+l.slice(2)+'&autoplay=1&loop=1':'https://www.youtube.com/embed/'+v[0]+'?autoplay=1&loop=1&playlist='+v.join(',');
+ const i=document.createElement('iframe');i.id='yt';i.allow='autoplay; encrypted-media';i.src=src;i.style.cssText='position:fixed;left:0;bottom:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none';document.body.appendChild(i)}
+$('mu').onclick=()=>{const p=!!($('yt')||au);music(!p);$('mu').textContent=p?'🔊 Música':'🔇 Quitar música'};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-per]');if(b){per=b.dataset.per;draw()}});
+$('tv').onclick=()=>tvMode(!document.body.classList.contains('tv'));
+if(new URLSearchParams(location.search).has('tv'))tvMode(true);
+if(!RM){const pe=$('pe');for(let k=0;k<(navigator.hardwareConcurrency<=4?6:12);k++){const i=document.createElement('i'),z=3+Math.random()*5;i.style.cssText='left:'+Math.random()*100+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(9+Math.random()*10)+'s;animation-delay:'+(-Math.random()*14)+'s';pe.appendChild(i)}}
+document.addEventListener('visibilitychange',()=>document.body.classList.toggle('paused',document.hidden));
+if(String(CFG.firebaseConfig.apiKey).startsWith('PEGA')){$('m').innerHTML=empty('⚙️','Falta la configuración de Firebase.')}
+else{const fs=getFirestore(initializeApp(CFG.firebaseConfig));
+ let pt=0;onSnapshot(collection(fs,'photos'),sn=>{P={};sn.docs.forEach(x=>{P[x.id]=x.data()});clearTimeout(pt);pt=setTimeout(()=>{if(D0){last='';show(D0)}},150)},()=>{});
+ onSnapshot(doc(fs,'public','ranking'),sn=>{D0=sn.exists()?sn.data():null;NI={};((D0&&D0.all)||[]).forEach(a=>{if(a.i)NI[a.n]=a.i});show(D0)},()=>{$('m').innerHTML=empty('📡','No se pudo cargar el ranking. Revisa tu conexión.')})}
+</script>
+</body>
+</html>
